@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 import numpy as np
-from ft_pypackage import ft_type
+# from ft_pypackage import ft_type
 
 # pd.options.display.float_format = '{:.6f}'.format
 
@@ -33,7 +33,7 @@ def is_valid(value: int | float) -> bool:
     return False
 
 
-@ft_type(float)
+# @ft_type(float)
 def ft_count(df_slice: pd.DataFrame) -> float:
     count = 0
     for value in df_slice:
@@ -41,7 +41,7 @@ def ft_count(df_slice: pd.DataFrame) -> float:
             count += 1
     return count
 
-@ft_type(float)
+# @ft_type(float)
 def ft_mean(df_slice: pd.DataFrame) -> float:
     total = 0
     count = 0
@@ -51,7 +51,7 @@ def ft_mean(df_slice: pd.DataFrame) -> float:
             count += 1
     return total / count
 
-@ft_type(float)
+# @ft_type(float)
 def ft_std(df_slice: pd.DataFrame) -> float:
     mean = ft_mean(df_slice)
     sum_of_diff = 0
@@ -63,7 +63,7 @@ def ft_std(df_slice: pd.DataFrame) -> float:
     return variance**0.5
 
 
-@ft_type(float)
+# @ft_type(float)
 def ft_min(df_slice: pd.DataFrame) -> float:
     for value in df_slice:
         if is_valid(value):
@@ -74,27 +74,76 @@ def ft_min(df_slice: pd.DataFrame) -> float:
     return minimum
 
 
-@ft_type(float)
+# @ft_type(float)
 def ft_q1(df_slice: pd.DataFrame) -> float:
     df = df_slice.dropna().sort_values()
     count = len(df)
     if count == 0:
         return float('nan')
-    q1_index = count // 4
-    return df.iloc[q1_index - 1]
+    
+    # Calculate the exact position of the 25th percentile
+    q1_position = 0.25 * (count - 1)
+    
+    # Interpolate if necessary
+    lower_index = int(q1_position)
+    upper_index = lower_index + 1
+    if upper_index >= count:
+        return df.iloc[lower_index]
+    
+    lower_value = df.iloc[lower_index]
+    upper_value = df.iloc[upper_index]
+    interpolation = lower_value + (upper_value - lower_value) * (q1_position - lower_index)
+    
+    return interpolation
 
 
-@ft_type(float)
+# @ft_type(float)
 def ft_q2(df_slice: pd.DataFrame) -> float:
-    return 0.1
+    df = df_slice.dropna().sort_values()
+    count = len(df)
+    if count == 0:
+        return float('nan')
+    
+    # Calculate the exact position of the 25th percentile
+    q2_position = 0.5 * (count - 1)
+    
+    # Interpolate if necessary
+    lower_index = int(q2_position)
+    upper_index = lower_index + 1
+    if upper_index >= count:
+        return df.iloc[lower_index]
+    
+    lower_value = df.iloc[lower_index]
+    upper_value = df.iloc[upper_index]
+    interpolation = lower_value + (upper_value - lower_value) * (q2_position - lower_index)
+    
+    return interpolation
 
 
-@ft_type(float)
+# @ft_type(float)
 def ft_q3(df_slice: pd.DataFrame) -> float:
-    return 0.1
+    df = df_slice.dropna().sort_values()
+    count = len(df)
+    if count == 0:
+        return float('nan')
+    
+    # Calculate the exact position of the 25th percentile
+    q3_position = 0.75 * (count - 1)
+    
+    # Interpolate if necessary
+    lower_index = int(q3_position)
+    upper_index = lower_index + 1
+    if upper_index >= count:
+        return df.iloc[lower_index]
+    
+    lower_value = df.iloc[lower_index]
+    upper_value = df.iloc[upper_index]
+    interpolation = lower_value + (upper_value - lower_value) * (q3_position - lower_index)
+    
+    return interpolation
 
 
-@ft_type(float)
+# @ft_type(float)
 def ft_max(df_slice: pd.DataFrame) -> float:
     for value in df_slice:
         if is_valid(value):
