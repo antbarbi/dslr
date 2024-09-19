@@ -4,5 +4,5 @@ file = "dataset_train.csv"
 
 data = pd.read_csv(file)
 
-print(data)
-# print(data.describe())
+# print(data)
+print(data.describe())
