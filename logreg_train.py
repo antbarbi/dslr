@@ -1,4 +1,5 @@
 import argparse
+import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ from logreg_model import LogRegModel
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 from sklearn.preprocessing import LabelEncoder
+import joblib  # For saving the label encoder
 
 
 def parse() -> argparse.Namespace:
@@ -61,6 +63,7 @@ def main():
 
     classifiers = []
     classes = np.unique(y)
+    weights = {}
 
     for cls in classes:
         binary_y_train = (y_train == cls).astype(int)
@@ -68,26 +71,34 @@ def main():
         model = LogRegModel(X_train.shape[1])
         model.fit(X_train, binary_y_train, 0.5, 200)
         classifiers.append(model)
+
+        weights[str(cls)] = model.get_weights()  # Convert keys to strings
     
-    def predict(X):
-        # List to store scores from each classifier
-        scores = np.zeros((X.shape[0], len(classes)))
+    with open("weights.json", "w") as f:
+        json.dump(weights, f)
+
+    joblib.dump(le, "label_encoder.pkl")
+    
+    print("Weights and label encoder saved")
+    
+    # def predict(X):
+    #     # List to store scores from each classifier
+    #     scores = np.zeros((X.shape[0], len(classes)))
         
-        # For each classifier (one for each class)
-        for idx, model in enumerate(classifiers):
-            # Get the probabilities for the positive class (class == idx)
-            scores[:, idx] = model.predict_proba(X)[:, 1]  # assuming your LogRegModel has predict_proba
+    #     # For each classifier (one for each class)
+    #     for idx, model in enumerate(classifiers):
+    #         # Get the probabilities for the positive class (class == idx)
+    #         scores[:, idx] = model.predict_proba(X)[:, 1]  # assuming your LogRegModel has predict_proba
             
-        # Choose the class with the highest score
-        return np.argmax(scores, axis=1)
+    #     # Choose the class with the highest score
+    #     return np.argmax(scores, axis=1)
     
-    # Make predictions on the test set
-    y_pred = predict(X_test)
+    # # Make predictions on the test set
+    # y_pred = predict(X_test)
     
-    # Calculate accuracy
-    accuracy = np.mean(y_pred == y_test)
-    print(f"Accuracy: {accuracy * 100:.2f}%")
-    
+    # # Calculate accuracy
+    # accuracy = np.mean(y_pred == y_test)
+    # print(f"Accuracy: {accuracy * 100:.2f}%")
 
 if __name__ == "__main__":
     main()

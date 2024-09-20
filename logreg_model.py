@@ -42,3 +42,13 @@ class LogRegModel:
         accuracy = np.mean(y_pred == y)
         # print(f"Weights: {self.weights}, Bias: {self.bias}")
         return accuracy
+
+    def get_weights(self):
+        return {
+            "weights": self.weights.tolist(),
+            "bias": self.bias
+        }
+    
+    def set_weights(self, weights_dict):
+        self.weights = np.array(weights_dict["weights"])
+        self.bias = weights_dict["bias"]
