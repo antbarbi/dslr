@@ -84,11 +84,9 @@ def ft_q1(df_slice: pd.DataFrame) -> float:
     # Calculate the exact position of the 25th percentile
     q1_position = 0.25 * (count - 1)
     
-    # Interpolate if necessary
+    # Interpolate
     lower_index = int(q1_position)
     upper_index = lower_index + 1
-    if upper_index >= count:
-        return df.iloc[lower_index]
     
     lower_value = df.iloc[lower_index]
     upper_value = df.iloc[upper_index]
@@ -104,17 +102,15 @@ def ft_q2(df_slice: pd.DataFrame) -> float:
     if count == 0:
         return float('nan')
     
-    # Calculate the exact position of the 25th percentile
     q2_position = 0.5 * (count - 1)
     
-    # Interpolate if necessary
+    # Interpolate
     lower_index = int(q2_position)
     upper_index = lower_index + 1
-    if upper_index >= count:
-        return df.iloc[lower_index]
     
     lower_value = df.iloc[lower_index]
     upper_value = df.iloc[upper_index]
+    print(f"interpolation = {lower_value} + ({upper_value} - {lower_value}) * ({q2_position} - {lower_index})")
     interpolation = lower_value + (upper_value - lower_value) * (q2_position - lower_index)
     
     return interpolation
@@ -126,15 +122,12 @@ def ft_q3(df_slice: pd.DataFrame) -> float:
     count = len(df)
     if count == 0:
         return float('nan')
-    
-    # Calculate the exact position of the 25th percentile
+
     q3_position = 0.75 * (count - 1)
     
-    # Interpolate if necessary
+    # Interpolate
     lower_index = int(q3_position)
     upper_index = lower_index + 1
-    if upper_index >= count:
-        return df.iloc[lower_index]
     
     lower_value = df.iloc[lower_index]
     upper_value = df.iloc[upper_index]
