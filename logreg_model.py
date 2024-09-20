@@ -32,6 +32,11 @@ class LogRegModel:
         return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
 
 
+    def predict_proba(self, X):
+        # Sigmoid function to get probabilities
+        probabilities = 1 / (1 + np.exp(-(np.dot(X, self.weights) + self.bias)))
+        return np.column_stack((1 - probabilities, probabilities)) 
+
     def score(self, x: pd.DataFrame, y: pd.DataFrame) -> float:
         y_pred = self.predict(x)
         accuracy = np.mean(y_pred == y)

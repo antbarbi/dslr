@@ -58,23 +58,36 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train model
-    model = LogRegModel(X_train.shape[1])
-    for lr in np.linspace(0.001, 0.5, 100):  # Explore learning rates from 0.001 to 1
-            loss = model.fit(X_train, y_train, lr, 200)
-            print(loss)
-            accuracy = model.score(X_test, y_test)
-            print(f"Accuracy: {accuracy * 100:.2f}%")
 
+    classifiers = []
+    classes = np.unique(y)
 
-    ##### Test with sklearn's LogisticRegression
-    from sklearn.linear_model import LogisticRegression
+    for cls in classes:
+        binary_y_train = (y_train == cls).astype(int)
 
-    model = LogisticRegression(multi_class='multinomial', max_iter=4000)
-    model.fit(X_train, y_train)
-    accuracy = model.score(X_test, y_test)
+        model = LogRegModel(X_train.shape[1])
+        model.fit(X_train, binary_y_train, 0.5, 200)
+        classifiers.append(model)
+    
+    def predict(X):
+        # List to store scores from each classifier
+        scores = np.zeros((X.shape[0], len(classes)))
+        
+        # For each classifier (one for each class)
+        for idx, model in enumerate(classifiers):
+            # Get the probabilities for the positive class (class == idx)
+            scores[:, idx] = model.predict_proba(X)[:, 1]  # assuming your LogRegModel has predict_proba
+            
+        # Choose the class with the highest score
+        return np.argmax(scores, axis=1)
+    
+    # Make predictions on the test set
+    y_pred = predict(X_test)
+    
+    # Calculate accuracy
+    accuracy = np.mean(y_pred == y_test)
     print(f"Accuracy: {accuracy * 100:.2f}%")
-
-
+    
 
 if __name__ == "__main__":
     main()
