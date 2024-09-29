@@ -3,14 +3,12 @@ import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from logreg_model import LogRegModel
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-from statsmodels.tools.tools import add_constant
-from sklearn.preprocessing import LabelEncoder
 import joblib  # For saving the label encoder
 
 
@@ -144,7 +142,7 @@ def main():
     y_pred = predict(X_test)
     
     # Calculate accuracy on the test set (not the truth!)
-    accuracy = np.mean(y_pred == y_test)
+    accuracy = accuracy_score(y_test, y_pred)
     print(f"Accuracy: {accuracy * 100:.2f}%")
 
 if __name__ == "__main__":
