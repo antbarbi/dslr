@@ -14,10 +14,7 @@ class LogRegModel:
         return 1.0 / (1.0 + np.exp(-(np.dot(x, self.weights) + self.bias)))
 
 
-    def fit(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, epochs: int, gd_type='gd', batch_size=32):
-        if gd_type not in ['gd', 'sgd', 'mbgd']:
-            raise ValueError("gd_type must be 'stochastic' or 'mini-batch'")
-        
+    def fit(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, epochs: int, gd_type: str, batch_size: int=None):
         cost = np.zeros(epochs, dtype=float)
         for epoch in tqdm(range(epochs)):
             if gd_type == 'gd':
@@ -61,6 +58,7 @@ class LogRegModel:
 
     def mbgd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, batch_size: int):
         m = x.shape[0]
+        x = x.reset_index(drop=True)  # Reset the index of the DataFrame
         shuffled_indices = np.random.permutation(m)
         x_shuffled = x.loc[shuffled_indices]
         y_shuffled = y[shuffled_indices]
@@ -75,7 +73,9 @@ class LogRegModel:
             self.weights -= lr * (1 / batch_size) * np.dot(xi.T, y_pred - yi)
             self.bias -= lr * (1 / batch_size) * np.sum(y_pred - yi)
             
-        return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        y_pred_full = self.predict(x)
+        y_pred_full = np.clip(y_pred_full, 1e-15, 1 - 1e-15)
+        return (-1/m) * np.sum(y * np.log(y_pred_full) + (1 - y) * np.log(1 - y_pred_full))
     
     def predict_proba(self, X):
         # Sigmoid function to get probabilities

@@ -29,6 +29,23 @@ def parse() -> argparse.Namespace:
         action="store_true",
         help="cost history"
     )
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "-sgd",
+        action="store_true",
+        help="use stochastic gradient descent"
+    )
+    group.add_argument(
+        "-mbgd",
+        nargs="?",
+        const=32,
+        type=int,
+        choices=range(2, 1001),
+        metavar="[2-1000]",
+        help="use mini-batch gradient descent with batch size between 2 and 1000"
+    )
+
     return parser.parse_args()
 
 
@@ -91,7 +108,12 @@ def main():
         binary_y_train = (y_train == cls).astype(int)
 
         model = LogRegModel(X_train.shape[1])
-        _, cost_history = model.fit(X_train, binary_y_train, 0.5, 500)
+        if args.sgd:
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 50, "sgd")
+        elif args.mbgd:
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 150, "mbgd", batch_size=args.mbgd)
+        else:
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 500, "gd")
         classifiers.append(model)
         weights[str(cls)] = model.get_weights()  # Convert keys to strings
         cost_histories[str(cls)] = cost_history
