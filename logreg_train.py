@@ -91,7 +91,7 @@ def main():
         binary_y_train = (y_train == cls).astype(int)
 
         model = LogRegModel(X_train.shape[1])
-        _, cost_history = model.fit(X_train, binary_y_train, 0.2, 1000)
+        _, cost_history = model.fit(X_train, binary_y_train, 0.5, 500)
         classifiers.append(model)
         weights[str(cls)] = model.get_weights()  # Convert keys to strings
         cost_histories[str(cls)] = cost_history

@@ -15,17 +15,17 @@ class LogRegModel:
 
 
     def fit(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, epochs: int, gd_type='gd', batch_size=32):
-        if gd_type not in ['gd', 'sgd', 'mdgd']:
-            raise ValueError("gd_type must be 'stochastic', 'batch' or 'mini-batch'")
+        if gd_type not in ['gd', 'sgd', 'mbgd']:
+            raise ValueError("gd_type must be 'stochastic' or 'mini-batch'")
         
         cost = np.zeros(epochs, dtype=float)
         for epoch in tqdm(range(epochs)):
             if gd_type == 'gd':
                 loss = self.gd(x, y, lr)
-            # elif gd_type == 'sgd':
-            #     loss = self.sgd(x, y, lr)
-            # elif gd_type == 'mbgd':
-                # loss = self.mbgd(x, y, lr, batch_size)
+            elif gd_type == 'sgd':
+                loss = self.sgd(x, y, lr)
+            elif gd_type == 'mbgd':
+                loss = self.mbgd(x, y, lr, batch_size)
             cost[epoch] = loss
         return loss, cost
 
@@ -41,40 +41,41 @@ class LogRegModel:
 
         return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
 
-    # def sgd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float):
-    #     shuffled_indices = np.random.permutation(x.index)
-    #     x_shuffled = x.loc[shuffled_indices].reset_index(drop=True)
-    #     y_shuffled = y.loc[shuffled_indices].reset_index(drop=True)
+    def sgd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float):
+        m = x.shape[0]
+        shuffled_indices = np.random.permutation(m)
+        x_shuffled = x.iloc[shuffled_indices]
+        y_shuffled = y[shuffled_indices]
         
-    #     for i in range(x_shuffled.shape[0]):
-    #         xi = x_shuffled.iloc[i:i+1]
-    #         yi = y_shuffled.iloc[i:i+1]
+        for i in range(m):
+            xi = x_shuffled.iloc[i:i+1]
+            yi = y_shuffled[i:i+1]
             
-    #         y_pred = self.predict(xi)
-    #         y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+            y_pred = self.predict(xi)
+            y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
             
-    #         self.weights -= lr * np.dot(xi.T, y_pred - yi)
-    #         self.bias -= lr * np.sum(y_pred - yi)
+            self.weights -= lr * np.dot(xi.T, y_pred - yi)
+            self.bias -= lr * np.sum(y_pred - yi)
             
-    #     return (-1/x.shape[0]) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
 
-    # def mbgd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, batch_size: int):
-    #     m = x.shape[0]
-    #     shuffled_indices = np.random.permutation(x.index)
-    #     x_shuffled = x.loc[shuffled_indices].reset_index(drop=True)
-    #     y_shuffled = y.loc[shuffled_indices].reset_index(drop=True)
+    def mbgd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, batch_size: int):
+        m = x.shape[0]
+        shuffled_indices = np.random.permutation(m)
+        x_shuffled = x.loc[shuffled_indices]
+        y_shuffled = y[shuffled_indices]
         
-    #     for i in range(0, m, batch_size):
-    #         xi = x_shuffled.iloc[i:i+batch_size]
-    #         yi = y_shuffled.iloc[i:i+batch_size]
+        for i in range(0, m, batch_size):
+            xi = x_shuffled.iloc[i:i+batch_size]
+            yi = y_shuffled[i:i+batch_size]
             
-    #         y_pred = self.predict(xi)
-    #         y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+            y_pred = self.predict(xi)
+            y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
             
-    #         self.weights -= lr * (1 / batch_size) * np.dot(xi.T, y_pred - yi)
-    #         self.bias -= lr * (1 / batch_size) * np.sum(y_pred - yi)
+            self.weights -= lr * (1 / batch_size) * np.dot(xi.T, y_pred - yi)
+            self.bias -= lr * (1 / batch_size) * np.sum(y_pred - yi)
             
-    #     return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
     
     def predict_proba(self, X):
         # Sigmoid function to get probabilities
