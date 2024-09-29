@@ -41,9 +41,9 @@ def parse() -> argparse.Namespace:
         nargs="?",
         const=32,
         type=int,
-        choices=range(2, 1001),
-        metavar="[2-1000]",
-        help="use mini-batch gradient descent with batch size between 2 and 1000"
+        choices=range(2, 1281),
+        metavar="[2-1280]",
+        help="use mini-batch gradient descent with batch size between 2 and 1280"
     )
 
     return parser.parse_args()
