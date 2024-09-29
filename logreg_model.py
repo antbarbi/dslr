@@ -17,14 +17,17 @@ class LogRegModel:
     def fit(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, epochs: int, gd_type='gd', batch_size=32):
         if gd_type not in ['gd', 'sgd', 'mdgd']:
             raise ValueError("gd_type must be 'stochastic', 'batch' or 'mini-batch'")
+        
+        cost = np.zeros(epochs, dtype=float)
         for epoch in tqdm(range(epochs)):
             if gd_type == 'gd':
                 loss = self.gd(x, y, lr)
             # elif gd_type == 'sgd':
             #     loss = self.sgd(x, y, lr)
             # elif gd_type == 'mbgd':
-                loss = self.mbgd(x, y, lr, batch_size)
-        return loss
+                # loss = self.mbgd(x, y, lr, batch_size)
+            cost[epoch] = loss
+        return loss, cost
 
 
     def gd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float):

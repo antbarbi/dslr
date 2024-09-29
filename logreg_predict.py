@@ -33,11 +33,9 @@ def main():
                 "Last Name", 
                 "Birthday", 
                 "Best Hand",
-                "Charms",
-                "Ancient Runes",
-                "Defense Against the Dark Arts",
                 "Astronomy",
                 "Flying",
+                "Charms",
             ],
             axis=1,
             inplace=True)

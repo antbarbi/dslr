@@ -80,16 +80,6 @@ def ft_skewness(df_slice: pd.DataFrame) -> float:
         skewness = float('nan')
     return skewness
 
-# @ft_type(float)
-def ft_kurtosis(df_slice: pd.DataFrame) -> float:
-    mean = ft_mean(df_slice)
-    std = ft_std(df_slice)
-    count = ft_count(df_slice)
-    kurtosis = 0
-    for value in df_slice:
-        if is_valid(value):
-            kurtosis += ((value - mean) / std) ** 4
-    return kurtosis / count - 3 if count > 0 else float('nan')
 
 # @ft_type(float)
 def ft_min(df_slice: pd.DataFrame) -> float:
@@ -186,7 +176,6 @@ def main():
         "variance": ft_variance,
         "std": ft_std,
         "skewness": ft_skewness,
-        "kurtosis": ft_kurtosis,
         "min": ft_min,
         "25%": ft_q1,
         "50%": ft_q2,

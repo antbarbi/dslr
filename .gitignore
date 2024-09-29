@@ -3,3 +3,4 @@ __pycache__
 label_encoder.pkl
 weights.json
 houses.csv
+data
