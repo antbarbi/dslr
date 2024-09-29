@@ -32,12 +32,13 @@ def parse() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def plot_loss(classes, cost_histories):
+def plot_loss(classes, cost_histories, le):
     """plot the loss curve"""
 
     plt.figure(figsize=(10, 6))
     for cls in classes:
-        plt.plot(cost_histories[str(cls)], label=f'House {cls}')
+        house_name = le.inverse_transform([cls])[0]
+        plt.plot(cost_histories[str(cls)], label=f'{house_name}')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title('Cost History for Each House')
@@ -101,7 +102,7 @@ def main():
     joblib.dump(le, "label_encoder.pkl")
 
     if args.c:
-        plot_loss(classes, cost_histories)
+        plot_loss(classes, cost_histories, le)
     
     print("Weights and label encoder saved")
     
