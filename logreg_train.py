@@ -1,4 +1,5 @@
 import argparse
+import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,9 +11,12 @@ from logreg_model import LogRegModel
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 from sklearn.preprocessing import LabelEncoder
+import joblib  # For saving the label encoder
 
 
 def parse() -> argparse.Namespace:
+    """parse arguments"""
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -20,11 +24,50 @@ def parse() -> argparse.Namespace:
         type=str,
         help="filename to get describe for"
     )
+    parser.add_argument(
+        "-c",
+        action="store_true",
+        help="cost history"
+    )
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "-sgd",
+        action="store_true",
+        help="use stochastic gradient descent"
+    )
+    group.add_argument(
+        "-mbgd",
+        nargs="?",
+        const=32,
+        type=int,
+        choices=range(2, 1281),
+        metavar="[2-1280]",
+        help="use mini-batch gradient descent with batch size between 2 and 1280"
+    )
+
     return parser.parse_args()
 
 
+def plot_loss(classes, cost_histories, le):
+    """plot the loss curve"""
+
+    plt.figure(figsize=(10, 6))
+    for cls in classes:
+        house_name = le.inverse_transform([cls])[0]
+        plt.plot(cost_histories[str(cls)], label=f'{house_name}')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Cost History for Each House')
+    plt.legend()
+    plt.show()
+
+
 def main():
-    data = pd.read_csv(parse().dataset)
+    """training phase of data from dataset_train.csv"""
+
+    args = parse()
+    data = pd.read_csv(args.dataset)
     
     # Preprocess data
     data.drop([
@@ -33,11 +76,9 @@ def main():
                 "Last Name", 
                 "Birthday", 
                 "Best Hand",
-                "Charms",
-                "Ancient Runes",
-                "Defense Against the Dark Arts",
                 "Astronomy",
                 "Flying",
+                "Charms",
             ],
             axis=1,
             inplace=True)
@@ -52,22 +93,40 @@ def main():
     y = le.fit_transform(data["Hogwarts House"])
 
     scaler = MinMaxScaler()
-    X = pd.DataFrame(scaler.fit_transform(X))
+    X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
 
     # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     # Train model
-
     classifiers = []
     classes = np.unique(y)
+    weights = {}
+    cost_histories = {}
 
     for cls in classes:
         binary_y_train = (y_train == cls).astype(int)
 
         model = LogRegModel(X_train.shape[1])
-        model.fit(X_train, binary_y_train, 0.5, 200)
+        if args.sgd:
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 50, "sgd")
+        elif args.mbgd:
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 150, "mbgd", batch_size=args.mbgd)
+        else:
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 500, "gd")
         classifiers.append(model)
+        weights[str(cls)] = model.get_weights()  # Convert keys to strings
+        cost_histories[str(cls)] = cost_history
+    
+    with open("weights.json", "w") as f:
+        json.dump(weights, f)
+
+    joblib.dump(le, "label_encoder.pkl")
+
+    if args.c:
+        plot_loss(classes, cost_histories, le)
+    
+    print("Weights and label encoder saved")
     
     def predict(X):
         # List to store scores from each classifier
@@ -84,10 +143,9 @@ def main():
     # Make predictions on the test set
     y_pred = predict(X_test)
     
-    # Calculate accuracy
+    # Calculate accuracy on the test set (not the truth!)
     accuracy = np.mean(y_pred == y_test)
     print(f"Accuracy: {accuracy * 100:.2f}%")
-    
 
 if __name__ == "__main__":
     main()

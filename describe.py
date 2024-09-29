@@ -52,15 +52,33 @@ def ft_mean(df_slice: pd.DataFrame) -> float:
     return total / count
 
 # @ft_type(float)
-def ft_std(df_slice: pd.DataFrame) -> float:
+def ft_variance(df_slice: pd.DataFrame) -> float:
     mean = ft_mean(df_slice)
     sum_of_diff = 0
     count = ft_count(df_slice)
     for value in df_slice:
         if is_valid(value):
             sum_of_diff += (value - mean)**2
-    variance = sum_of_diff / (count - 1) if count > 1 else float('nan')
-    return variance**0.5
+    return sum_of_diff / (count - 1) if count > 1 else float('nan')
+
+# @ft_type(float)
+def ft_std(df_slice: pd.DataFrame) -> float:
+    return ft_variance(df_slice)**0.5
+
+# @ft_type(float)
+def ft_skewness(df_slice: pd.DataFrame) -> float:
+    mean = ft_mean(df_slice)
+    std = ft_std(df_slice)
+    count = ft_count(df_slice)
+    skewness = 0
+    for value in df_slice:
+        if is_valid(value):
+            skewness += ((value - mean) / std) ** 3
+    if count > 2:
+        skewness *= count / ((count - 1) * (count - 2))
+    else:
+        skewness = float('nan')
+    return skewness
 
 
 # @ft_type(float)
@@ -155,7 +173,9 @@ def main():
     stats = {
         "count": ft_count,
         "mean": ft_mean,
+        "variance": ft_variance,
         "std": ft_std,
+        "skewness": ft_skewness,
         "min": ft_min,
         "25%": ft_q1,
         "50%": ft_q2,
@@ -187,4 +207,3 @@ def test():
 if __name__ == "__main__":
     main()
     # test()
-    
