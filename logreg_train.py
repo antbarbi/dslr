@@ -120,7 +120,7 @@ def main():
     # Make predictions on the test set
     y_pred = predict(X_test)
     
-    # Calculate accuracy
+    # Calculate accuracy on the test set (not the truth!)
     accuracy = np.mean(y_pred == y_test)
     print(f"Accuracy: {accuracy * 100:.2f}%")
 

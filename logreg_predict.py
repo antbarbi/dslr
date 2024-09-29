@@ -65,8 +65,7 @@ def main():
         
         # For each classifier (one for each class)
         for idx, model in enumerate(classifiers):
-            # Get the probabilities for the positive class (class == idx)
-            scores[:, idx] = model.predict_proba(X)[:, 1]  # assuming your LogRegModel has predict_proba
+            scores[:, idx] = model.predict_proba(X)[:, 1]
             
         # Choose the class with the highest score
         return np.argmax(scores, axis=1)
