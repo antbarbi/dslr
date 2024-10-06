@@ -128,7 +128,7 @@ def ft_q2(df_slice: pd.DataFrame) -> float:
     
     lower_value = df.iloc[lower_index]
     upper_value = df.iloc[upper_index]
-    print(f"interpolation = {lower_value} + ({upper_value} - {lower_value}) * ({q2_position} - {lower_index})")
+    # print(f"interpolation = {lower_value} + ({upper_value} - {lower_value}) * ({q2_position} - {lower_index})")
     interpolation = lower_value + (upper_value - lower_value) * (q2_position - lower_index)
     
     return interpolation
@@ -191,7 +191,6 @@ def main():
     describe.index = stats.keys()
     
     print(describe)
-    print(describe["Arithmancy"].dtype)
 
 
 def test():
