@@ -3,7 +3,7 @@
 42 - DataScience x Logistic Regression
 
 ## Introduction
-This project consists of implementing linear classification model called logistic regression. It will introduce us to different ways of data visualization as well as different algorithms that is used to train the data. The goal of this project is to predict the house where each Hogwarts student belong to.
+This project consists of implementing linear classification model called logistic regression. It will introduce us to different ways of data visualization as well as different algorithms that is used to train the data. The goal of this project is to predict the house where each Hogwarts student belong to, based on their features.
 
 ## Setup
 ```
