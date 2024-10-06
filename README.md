@@ -46,3 +46,4 @@ As a result, we will obtain a `houses.csv` file that will be compared to `datase
 ```bash
 python3 evaluate.py houses.csv dataset_truth.csv
 ```
+We expect at leat 98% accuracy!
