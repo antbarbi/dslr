@@ -21,18 +21,22 @@ python3 describe.py dataset_train.csv
 ```
 
 ### Training Phase
-Train dataset with different algorithms:
+Train dataset with different options:
+- Gradient Descent
 ```bash
-python3 logreg_train.py dataset_train.csv # gradient descent
+python3 logreg_train.py dataset_train.csv
 ```
+- Cost history visualization
 ```bash
-python3 logreg_train.py dataset_train.csv -c # display cost history
+python3 logreg_train.py dataset_train.csv -c
 ```
+- Stochastic Gradient Descent
 ```bash
-python3 logreg_train.py dataset_train.csv -sgd # stochastic gradient descent
+python3 logreg_train.py dataset_train.csv -sgd
 ```
+- Mini-batch Gradient Descent
 ```bash
-python3 logreg_train.py dataset_train.csv -mbgd # mini-batch gradient descent
+python3 logreg_train.py dataset_train.csv -mbgd
 ```
 As a result, we will obtain a `weights.json` file that will be used in the prediction phase.
 
