@@ -32,7 +32,7 @@ python3 logreg_train.py dataset_train.csv -c # display cost history
 python3 logreg_train.py dataset_train.csv -sgd # stochastic gradient descent
 ```
 ```bash
-python3 logreg_train.py dataset_train.csv -mbgd # stochastic gradient descent
+python3 logreg_train.py dataset_train.csv -mbgd # mini-batch gradient descent
 ```
 As a result, we will obtain a `weights.json` file that will be used in the prediction phase.
 
@@ -46,3 +46,4 @@ As a result, we will obtain a `houses.csv` file that will be compared to `datase
 ```bash
 python3 evaluate.py houses.csv dataset_truth.csv
 ```
+We expect at leat 98% accuracy!
