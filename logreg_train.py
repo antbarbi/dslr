@@ -126,7 +126,7 @@ def main():
     
     print("Weights and label encoder saved")
     
-    def predict(X):
+    def one_vs_all(X):
         # List to store scores from each classifier
         scores = np.zeros((X.shape[0], len(classes)))
         
@@ -139,7 +139,7 @@ def main():
         return np.argmax(scores, axis=1)
     
     # Make predictions on the test set
-    y_pred = predict(X_test)
+    y_pred = one_vs_all(X_test)
     
     # Calculate accuracy on the test set (not the truth!)
     accuracy = accuracy_score(y_test, y_pred)
