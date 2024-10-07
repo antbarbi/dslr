@@ -107,11 +107,11 @@ def main():
 
         model = LogRegModel(X_train.shape[1])
         if args.sgd:
-            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 50, "sgd")
+            _, cost_history = model.fit(X_train, binary_y_train, 0.001, 250, "sgd")
         elif args.mbgd:
-            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 150, "mbgd", batch_size=args.mbgd)
+            _, cost_history = model.fit(X_train, binary_y_train, 0.2, 1000, "mbgd", batch_size=args.mbgd)
         else:
-            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 500, "gd")
+            _, cost_history = model.fit(X_train, binary_y_train, 0.5, 1000, "gd")
         classifiers.append(model)
         weights[str(cls)] = model.get_weights()  # Convert keys to strings
         cost_histories[str(cls)] = cost_history
