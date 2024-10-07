@@ -59,7 +59,7 @@ def main():
         model.set_weights(weights[cls])
         classifiers.append(model)
     
-    def predict(X):
+    def one_vs_all(X):
         # List to store scores from each classifier
         scores = np.zeros((X.shape[0], len(classes)))
         
@@ -71,7 +71,7 @@ def main():
         return np.argmax(scores, axis=1)
     
     # Make predictions on the dataset_test
-    y_pred = predict(X)
+    y_pred = one_vs_all(X)
     
     # Load the label encoder
     le = joblib.load("label_encoder.pkl")
