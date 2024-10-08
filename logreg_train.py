@@ -107,7 +107,7 @@ def main():
 
         model = LogRegModel(X_train.shape[1])
         if args.sgd:
-            _, cost_history = model.fit(X_train, binary_y_train, 0.001, 250, "sgd")
+            _, cost_history = model.fit(X_train, binary_y_train, 0.01, 250, "sgd")
         elif args.mbgd:
             _, cost_history = model.fit(X_train, binary_y_train, 0.2, 1000, "mbgd", batch_size=args.mbgd)
         else:

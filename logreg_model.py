@@ -43,6 +43,7 @@ class LogRegModel:
         shuffled_indices = np.random.permutation(m)
         x_shuffled = x.iloc[shuffled_indices]
         y_shuffled = y[shuffled_indices]
+        total_loss = 0.0
         
         for i in range(m):
             xi = x_shuffled.iloc[i:i+1]
@@ -53,8 +54,9 @@ class LogRegModel:
             
             self.weights -= lr * np.dot(xi.T, y_pred - yi)
             self.bias -= lr * np.sum(y_pred - yi)
+            total_loss += np.sum(yi * np.log(y_pred) + (1 - yi) * np.log(1 - y_pred))
             
-        return (-1/m) * np.sum(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        return (-1/m) * total_loss
 
     def mbgd(self, x: pd.DataFrame, y: pd.DataFrame, lr: float, batch_size: int):
         m = x.shape[0]
@@ -62,6 +64,7 @@ class LogRegModel:
         shuffled_indices = np.random.permutation(m)
         x_shuffled = x.loc[shuffled_indices]
         y_shuffled = y[shuffled_indices]
+        total_loss = 0.0
         
         for i in range(0, m, batch_size):
             xi = x_shuffled.iloc[i:i+batch_size]
@@ -72,10 +75,11 @@ class LogRegModel:
             
             self.weights -= lr * (1 / batch_size) * np.dot(xi.T, y_pred - yi)
             self.bias -= lr * (1 / batch_size) * np.sum(y_pred - yi)
-            
+            total_loss += np.sum(yi * np.log(y_pred) + (1 - yi) * np.log(1 - y_pred))
+
         y_pred_full = self.predict(x)
         y_pred_full = np.clip(y_pred_full, 1e-15, 1 - 1e-15)
-        return (-1/m) * np.sum(y * np.log(y_pred_full) + (1 - y) * np.log(1 - y_pred_full))
+        return (-1/m) * total_loss
     
     def predict_proba(self, X):
         # Sigmoid function to get probabilities
